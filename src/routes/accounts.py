@@ -142,7 +142,6 @@ async def request_password_reset(
     await db.commit()
     return response
 
-
 @router.post(
     "/reset-password/complete/",
     response_model=MessageResponseSchema,
