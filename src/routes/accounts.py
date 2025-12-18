@@ -135,13 +135,12 @@ async def request_password_reset(
     user = await db.scalar(select(UserModel).where(UserModel.email == payload.email))
     if not user or not user.is_active:
         return response
-
-
+        
     await db.execute(delete(PasswordResetTokenModel).where(PasswordResetTokenModel.user_id == user.id))
     db.add(PasswordResetTokenModel(user_id=cast(int, user.id)))
     await db.commit()
     return response
-
+    
 @router.post(
     "/reset-password/complete/",
     response_model=MessageResponseSchema,
