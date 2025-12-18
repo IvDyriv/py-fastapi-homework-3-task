@@ -127,7 +127,6 @@ async def request_password_reset(
     payload: PasswordResetRequestSchema,
     db: AsyncSession = Depends(get_db),
 ) -> MessageResponseSchema:
-
     response = MessageResponseSchema(
         message="If you are registered, you will receive an email with instructions."
     )
@@ -135,8 +134,10 @@ async def request_password_reset(
     user = await db.scalar(select(UserModel).where(UserModel.email == payload.email))
     if not user or not user.is_active:
         return response
-        
-    await db.execute(delete(PasswordResetTokenModel).where(PasswordResetTokenModel.user_id == user.id))
+
+    await db.execute(
+        delete(PasswordResetTokenModel).where(PasswordResetTokenModel.user_id == user.id)
+    )
     db.add(PasswordResetTokenModel(user_id=cast(int, user.id)))
     await db.commit()
     return response
